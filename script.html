@@ -1,44 +1,159 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Shared Script Editor</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shared Script Editor</title>
+
+<style>
+body{
+    font-family:Arial,sans-serif;
+    padding:20px;
+}
+
+textarea{
+    width:100%;
+    height:300px;
+    font-size:16px;
+}
+
+button{
+    padding:10px 20px;
+    margin-top:10px;
+}
+</style>
 </head>
 <body>
-    <h1>Shared Script Editor</h1>
 
-    <textarea id="script" rows="20" cols="80"></textarea>
-    <br><br>
-    <button onclick="saveScript()">Save</button>
+<h1>Shared Script Editor</h1>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+<textarea id="script"></textarea>
+<br>
 
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT.firebaseapp.com",
-            databaseURL: "YOUR_DATABASE_URL",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
+<button onclick="saveScript()">Save</button>
+<button onclick="location.href='index.html'">Home</button>
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+<script>
+const BIN_ID = "YOUR_BIN_ID";
+const API_KEY = "YOUR_MASTER_KEY";
 
-        const scriptRef = ref(db, "sharedScript");
+async function loadScript() {
+    const response = await fetch(
+        `https://api.jsonbin.io/v3/b/${BIN_ID}/latest`,
+        {
+            headers: {
+                "X-Master-Key": API_KEY
+            }
+        }
+    );
 
-        onValue(scriptRef, (snapshot) => {
-            document.getElementById("script").value =
-                snapshot.val() || "";
-        });
+    const data = await response.json();
 
-        window.saveScript = function () {
-            set(scriptRef,
-                document.getElementById("script").value);
-            alert("Saved!");
-        };
-    </script>
+    document.getElementById("script").value =
+        data.record.script || "";
+}
+
+async function saveScript() {
+    const text =
+        document.getElementById("script").value;
+
+    await fetch(
+        `https://api.jsonbin.io/v3/b/${BIN_ID}`,
+        {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "X-Master-Key": API_KEY
+            },
+            body: JSON.stringify({
+                script: text
+            })
+        }
+    );
+
+    alert("Saved!");
+}
+
+loadScript();
+</script>
+
+</body>
+</html><!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shared Script Editor</title>
+
+<style>
+body{
+    font-family:Arial,sans-serif;
+    padding:20px;
+}
+
+textarea{
+    width:100%;
+    height:300px;
+    font-size:16px;
+}
+
+button{
+    padding:10px 20px;
+    margin-top:10px;
+}
+</style>
+</head>
+<body>
+
+<h1>Shared Script Editor</h1>
+
+<textarea id="script"></textarea>
+<br>
+
+<button onclick="saveScript()">Save</button>
+<button onclick="location.href='index.html'">Home</button>
+
+<script>
+const BIN_ID = "YOUR_BIN_ID";
+const API_KEY = "YOUR_MASTER_KEY";
+
+async function loadScript() {
+    const response = await fetch(
+        `https://api.jsonbin.io/v3/b/${BIN_ID}/latest`,
+        {
+            headers: {
+                "X-Master-Key": API_KEY
+            }
+        }
+    );
+
+    const data = await response.json();
+
+    document.getElementById("script").value =
+        data.record.script || "";
+}
+
+async function saveScript() {
+    const text =
+        document.getElementById("script").value;
+
+    await fetch(
+        `https://api.jsonbin.io/v3/b/${BIN_ID}`,
+        {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "X-Master-Key": API_KEY
+            },
+            body: JSON.stringify({
+                script: text
+            })
+        }
+    );
+
+    alert("Saved!");
+}
+
+loadScript();
+</script>
+
 </body>
 </html>
