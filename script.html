@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Shared Script Editor</title>
+</head>
+<body>
+    <h1>Shared Script Editor</h1>
+
+    <textarea id="script" rows="20" cols="80"></textarea>
+    <br><br>
+    <button onclick="saveScript()">Save</button>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT.firebaseapp.com",
+            databaseURL: "YOUR_DATABASE_URL",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        const scriptRef = ref(db, "sharedScript");
+
+        onValue(scriptRef, (snapshot) => {
+            document.getElementById("script").value =
+                snapshot.val() || "";
+        });
+
+        window.saveScript = function () {
+            set(scriptRef,
+                document.getElementById("script").value);
+            alert("Saved!");
+        };
+    </script>
+</body>
+</html>
